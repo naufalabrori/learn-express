@@ -23,6 +23,65 @@ model User {
   PhoneNumber String?
   RoleId      String
   Role        Role @relation(fields: [RoleId], references: [Id], onDelete: Restrict)
+  Orders      Order[]
+  Reviews     Review[]
   CreatedAt   DateTime @default(now())
   UpdatedAt   DateTime @updatedAt
+}
+
+model Category {
+  Id            String @id @default(uuid())
+  CategoryName  String
+  Products      Product[]
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+}
+
+model Product {
+  Id            String @id @default(uuid())
+  ProductName   String
+  Description   String?
+  Price         Decimal
+  Stock         Int @default(0)
+  CategoryId    String
+  Category      Category @relation(fields: [CategoryId], references: [Id], onDelete: Restrict)
+  OrderDetails  OrderDetail[]
+  Reviews       Review[]
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+}
+
+model Order {
+  Id            String @id @default(uuid())
+  UserId        String
+  User          User @relation(fields: [UserId], references: [Id], onDelete: Restrict)
+  OrderDate     DateTime @default(now())
+  TotalAmount   Decimal
+  OrderStatus   String
+  OrderDetails  OrderDetail[]
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+}
+
+model OrderDetail {
+  Id          String @id @default(uuid())
+  OrderId     String
+  Order       Order @relation(fields: [OrderId], references: [Id], onDelete: Restrict)
+  ProductId   String
+  Product     Product @relation(fields: [ProductId], references: [Id], onDelete: Restrict)
+  Quantity    Int
+  Price       Decimal
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+}
+
+model Review {
+  Id          String @id @default(uuid())
+  UserId      String
+  User        User @relation(fields: [UserId], references: [Id], onDelete: Restrict)
+  ProductId   String
+  Product     Product @relation(fields: [ProductId], references: [Id], onDelete: Restrict)
+  Rating      Int
+  Comment     String?
+  ReviewDate  DateTime @default(now())
 }
