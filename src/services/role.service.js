@@ -21,6 +21,40 @@ const getRoleById = async (id) => {
   return role;
 };
 
+const getRolesPaged = async (page = 1, limit = 5, search) => {
+  const skip = (page - 1) * limit;
+
+  const roles = await prisma.role.findMany({
+    skip: skip,
+    take: limit,
+    where: {
+      RoleName: { contains: search, mode: "insensitive" }
+    },
+    select: {
+      Id: true,
+      RoleName: true,
+      CreatedAt: true,
+      UpdatedAt: true
+    },
+    orderBy: {
+      CreatedAt: "desc"
+    }
+  })
+
+  const totalRoles = await prisma.role.count({
+    where: {
+      RoleName: { contains: search, mode: "insensitive" }
+    }
+  })
+
+  return {
+    data: roles,
+    currentPage: page,
+    totalPages: Math.ceil(totalRoles / limit),
+    totalRoles
+  }
+}
+
 const updateRole = async (id, data) => {
   const updatedRole = await prisma.role.update({
     where: {
@@ -46,4 +80,5 @@ module.exports = {
   getRoleById,
   updateRole,
   deleteRole,
+  getRolesPaged
 };

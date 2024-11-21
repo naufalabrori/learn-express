@@ -7,9 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrderStatus {
+  Pending
+  Completed
+  Cancelled
+}
+
 model Role {
   Id        String @id @default(uuid())
-  RoleName  String @unique
+  RoleName  String @unique @db.VarChar(50)
   Users     User[]
   CreatedAt DateTime @default(now())
   UpdatedAt DateTime @updatedAt
@@ -17,10 +23,10 @@ model Role {
 
 model User {
   Id          String @id @default(uuid())
-  Username    String @unique
+  Username    String @unique @db.VarChar(50)
   Password    String
-  Email       String @unique
-  PhoneNumber String?
+  Email       String @unique @db.VarChar(100)
+  PhoneNumber String? @db.VarChar(15)
   RoleId      String
   Role        Role @relation(fields: [RoleId], references: [Id], onDelete: Restrict)
   Orders      Order[]
@@ -31,7 +37,7 @@ model User {
 
 model Category {
   Id            String @id @default(uuid())
-  CategoryName  String
+  CategoryName  String @db.VarChar(50)
   Products      Product[]
   CreatedAt     DateTime @default(now())
   UpdatedAt     DateTime @updatedAt
@@ -39,8 +45,8 @@ model Category {
 
 model Product {
   Id            String @id @default(uuid())
-  ProductName   String
-  Description   String?
+  ProductName   String @db.VarChar(100)
+  Description   String? @db.Text
   Price         Decimal
   Stock         Int @default(0)
   CategoryId    String
@@ -57,7 +63,7 @@ model Order {
   User          User @relation(fields: [UserId], references: [Id], onDelete: Restrict)
   OrderDate     DateTime @default(now())
   TotalAmount   Decimal
-  OrderStatus   String
+  OrderStatus   OrderStatus
   OrderDetails  OrderDetail[]
   CreatedAt     DateTime @default(now())
   UpdatedAt     DateTime @updatedAt
@@ -82,6 +88,6 @@ model Review {
   ProductId   String
   Product     Product @relation(fields: [ProductId], references: [Id], onDelete: Restrict)
   Rating      Int
-  Comment     String?
+  Comment     String? @db.Text
   ReviewDate  DateTime @default(now())
 }

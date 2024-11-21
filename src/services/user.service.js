@@ -15,6 +15,20 @@ const getUserPaged = async (page = 1, limit = 5, search) => {
         { PhoneNumber: { contains: search, mode:"insensitive" }},
       ]
     },
+    select: {
+      Id: true,
+      Email: true,
+      Username: true,
+      PhoneNumber: true,
+      Role: {
+        select: {
+          Id: true,
+          RoleName: true
+        }
+      },
+      CreatedAt: true,
+      UpdatedAt: true
+    },
     orderBy: { CreatedAt: "desc"}
   });
 

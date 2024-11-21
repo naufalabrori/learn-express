@@ -1,35 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const roleController = require("../controllers/roleController");
-const authMiddleware = require("../middlewares/authMiddleware");
+const categoryController = require("../controllers/categoryController");
+const authMiddleware = require('../middlewares/authMiddleware');
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Role:
+ *     Category:
  *       type: object
  *       required:
- *         - Rolename
+ *         - CategoryName
  *       properties:
  *         Id:
  *           type: uuid
- *           description: ID Role
- *         Rolename:
+ *         CategoryName:
  *           type: string
- *           description: Rolename Role
  *       example:
  *         Id: 00000000-0000-0000-0000-000000000000
- *         Rolename: exampleRole
+ *         CategoryName: exampleCategory
  */
 
 /**
  * @swagger
- * /roles/paged:
+ * /categories/paged:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Categories]
  *     parameters:
  *       - in: query
  *         name: page
@@ -45,7 +43,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
  *           type: string
  *     responses:
  *       200:
- *         description: Get data successfully
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
@@ -54,65 +52,42 @@ const authMiddleware = require("../middlewares/authMiddleware");
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Role'
+ *                     $ref: '#/components/schemas/Category'
  *                 currentPage:
  *                   type: integer
  *                 totalPages:
  *                   type: integer
- *                 totalRoles:
+ *                 totalCategory:
  *                   type: integer
  */
-router.get('/paged', authMiddleware.verifyToken, roleController.getRolesPaged);
+router.get('/paged', authMiddleware.verifyToken, categoryController.getCategoryPaged);
 
 /**
  * @swagger
- * /roles:
- *   post:
- *     security:
- *       - bearerAuth: []
- *     tags: [Roles]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Role'
- *     responses:
- *       201:
- *         description: Role berhasil dibuat
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Role'
- */
-router.post('/', authMiddleware.verifyToken, roleController.createRole);
-
-/**
- * @swagger
- * /roles:
+ * /categories:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Categories]
  *     responses:
  *       200:
- *         description: List Role berhasil diambil
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Role'
+ *                 $ref: '#/components/schemas/Category'
  */
-router.get('/', authMiddleware.verifyToken, roleController.getAllRole);
+router.get('/', authMiddleware.verifyToken, categoryController.getAllCategories);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /categories/{id}:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -121,23 +96,46 @@ router.get('/', authMiddleware.verifyToken, roleController.getAllRole);
  *           type: string
  *     responses:
  *       200:
- *         description: Data Role berhasil diambil
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Category'
  *       404:
- *         description: Role tidak ditemukan
+ *         description: Not found
  */
-router.get('/:id', authMiddleware.verifyToken, roleController.getRoleById);
+router.get('/:id', authMiddleware.verifyToken, categoryController.getCategoryById);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /categories:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Category'
+ *     responses:
+ *       201:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ */
+router.post('/', authMiddleware.verifyToken, categoryController.createCategory);
+
+/**
+ * @swagger
+ * /categories/{id}:
  *   put:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -149,26 +147,26 @@ router.get('/:id', authMiddleware.verifyToken, roleController.getRoleById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Role'
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       200:
- *         description: Role berhasil diperbarui
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Category'
  *       404:
- *         description: Role tidak ditemukan
+ *         description: Not found
  */
-router.put('/:id', authMiddleware.verifyToken, roleController.updateRole);
+router.put('/:id', authMiddleware.verifyToken, categoryController.updateCategory);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /categories/{id}:
  *   delete:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -177,10 +175,10 @@ router.put('/:id', authMiddleware.verifyToken, roleController.updateRole);
  *           type: string
  *     responses:
  *       200:
- *         description: User berhasil dihapus
+ *         description: Success
  *       404:
- *         description: User tidak ditemukan
+ *         description: Not Found
  */
-router.delete('/:id', authMiddleware.verifyToken, roleController.deleteRole);
+router.delete('/:id', authMiddleware.verifyToken, categoryController.deleteCategory);
 
 module.exports = router;
