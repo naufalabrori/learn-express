@@ -1,35 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const roleController = require("../controllers/roleController");
-const authMiddleware = require("../middlewares/authMiddleware");
+const orderController = require("../controllers/orderController");
+const authMiddleware = require('../middlewares/authMiddleware');
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Role:
+ *     Order:
  *       type: object
  *       required:
- *         - RoleName
+ *         - UserId
+ *         - TotalAmount
+ *         - OrderStatus
  *       properties:
  *         Id:
  *           type: uuid
- *           description: ID Role
- *         RoleName:
+ *         UserId:
  *           type: string
- *           description: RoleName Role
+ *         OrderDate:
+ *           type: string
+ *         TotalAmount:
+ *           type: Decimal
+ *         OrderStatus:
+ *           type: String
  *       example:
  *         Id: 00000000-0000-0000-0000-000000000000
- *         Rolename: exampleRole
+ *         UserId: 00000000-0000-0000-0000-000000000000
+ *         OrderDate: 2024-01-01T17:00:00.000Z
+ *         TotalAmount: 1000
+ *         OrderStatus: Pending
  */
 
 /**
  * @swagger
- * /roles/paged:
+ * /orders/paged:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Orders]
  *     parameters:
  *       - in: query
  *         name: page
@@ -45,7 +54,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
  *           type: string
  *     responses:
  *       200:
- *         description: Get data successfully
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
@@ -54,63 +63,42 @@ const authMiddleware = require("../middlewares/authMiddleware");
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Role'
+ *                     $ref: '#/components/schemas/Order'
  *                 currentPage:
  *                   type: integer
  *                 totalPages:
  *                   type: integer
- *                 totalRoles:
+ *                 totalOrder:
  *                   type: integer
  */
-router.get('/paged', authMiddleware.verifyToken, roleController.getRolesPaged);
+router.get('/paged', authMiddleware.verifyToken, orderController.getOrderPaged);
 
 /**
  * @swagger
- * /roles:
- *   post:
- *     tags: [Roles]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Role'
- *     responses:
- *       201:
- *         description: Role berhasil dibuat
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Role'
- */
-router.post('/', roleController.createRole);
-
-/**
- * @swagger
- * /roles:
+ * /orders:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Orders]
  *     responses:
  *       200:
- *         description: List Role berhasil diambil
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Role'
+ *                 $ref: '#/components/schemas/Order'
  */
-router.get('/', authMiddleware.verifyToken, roleController.getAllRole);
+router.get('/', authMiddleware.verifyToken, orderController.getAllOrders);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /orders/{id}:
  *   get:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
@@ -119,23 +107,46 @@ router.get('/', authMiddleware.verifyToken, roleController.getAllRole);
  *           type: string
  *     responses:
  *       200:
- *         description: Data Role berhasil diambil
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Order'
  *       404:
- *         description: Role tidak ditemukan
+ *         description: Not found
  */
-router.get('/:id', authMiddleware.verifyToken, roleController.getRoleById);
+router.get('/:id', authMiddleware.verifyToken, orderController.getOrderById);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /orders:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Order'
+ *     responses:
+ *       201:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ */
+router.post('/', authMiddleware.verifyToken, orderController.createOrder);
+
+/**
+ * @swagger
+ * /orders/{id}:
  *   put:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
@@ -147,26 +158,26 @@ router.get('/:id', authMiddleware.verifyToken, roleController.getRoleById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Role'
+ *             $ref: '#/components/schemas/Order'
  *     responses:
  *       200:
- *         description: Role berhasil diperbarui
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Order'
  *       404:
- *         description: Role tidak ditemukan
+ *         description: Not found
  */
-router.put('/:id', authMiddleware.verifyToken, roleController.updateRole);
+router.put('/:id', authMiddleware.verifyToken, orderController.updateOrder);
 
 /**
  * @swagger
- * /roles/{id}:
+ * /orders/{id}:
  *   delete:
  *     security:
  *       - bearerAuth: []
- *     tags: [Roles]
+ *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: id
@@ -175,10 +186,10 @@ router.put('/:id', authMiddleware.verifyToken, roleController.updateRole);
  *           type: string
  *     responses:
  *       200:
- *         description: User berhasil dihapus
+ *         description: Success
  *       404:
- *         description: User tidak ditemukan
+ *         description: Not Found
  */
-router.delete('/:id', authMiddleware.verifyToken, roleController.deleteRole);
+router.delete('/:id', authMiddleware.verifyToken, orderController.deleteOrder);
 
 module.exports = router;

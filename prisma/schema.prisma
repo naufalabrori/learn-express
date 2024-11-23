@@ -7,87 +7,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role {
+  Id        String   @id @default(uuid())
+  RoleName  String   @unique @db.VarChar(50)
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  Users     User[]
+}
+
+model User {
+  CreatedAt   DateTime @default(now())
+  Email       String   @unique @db.VarChar(100)
+  Id          String   @id @default(uuid())
+  Password    String
+  PhoneNumber String?  @db.VarChar(15)
+  RoleId      String
+  UpdatedAt   DateTime @updatedAt
+  Username    String   @unique @db.VarChar(50)
+  Orders      Order[]
+  Reviews     Review[]
+  Role        Role     @relation(fields: [RoleId], references: [Id])
+}
+
+model Category {
+  Id           String    @id @default(uuid())
+  CategoryName String    @db.VarChar(50)
+  CreatedAt    DateTime  @default(now())
+  UpdatedAt    DateTime  @updatedAt
+  Products     Product[]
+}
+
+model Product {
+  Id           String        @id @default(uuid())
+  ProductName  String        @db.VarChar(100)
+  Description  String?
+  Price        Decimal
+  Stock        Int           @default(0)
+  CategoryId   String
+  CreatedAt    DateTime      @default(now())
+  UpdatedAt    DateTime      @updatedAt
+  OrderDetails OrderDetail[]
+  Category     Category      @relation(fields: [CategoryId], references: [Id])
+  Reviews      Review[]
+}
+
+model Order {
+  Id           String        @id @default(uuid())
+  UserId       String
+  OrderDate    DateTime      @default(now())
+  TotalAmount  Decimal
+  CreatedAt    DateTime      @default(now())
+  UpdatedAt    DateTime      @updatedAt
+  OrderStatus  OrderStatus
+  User         User          @relation(fields: [UserId], references: [Id])
+  OrderDetails OrderDetail[]
+}
+
+model OrderDetail {
+  Id        String   @id @default(uuid())
+  OrderId   String
+  ProductId String
+  Quantity  Int
+  Price     Decimal
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  Order     Order    @relation(fields: [OrderId], references: [Id])
+  Product   Product  @relation(fields: [ProductId], references: [Id])
+}
+
+model Review {
+  Id         String   @id @default(uuid())
+  UserId     String
+  ProductId  String
+  Rating     Int
+  Comment    String?
+  ReviewDate DateTime @default(now())
+  Product    Product  @relation(fields: [ProductId], references: [Id])
+  User       User     @relation(fields: [UserId], references: [Id])
+}
+
 enum OrderStatus {
   Pending
   Completed
   Cancelled
-}
-
-model Role {
-  Id        String @id @default(uuid())
-  RoleName  String @unique @db.VarChar(50)
-  Users     User[]
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
-}
-
-model User {
-  Id          String @id @default(uuid())
-  Username    String @unique @db.VarChar(50)
-  Password    String
-  Email       String @unique @db.VarChar(100)
-  PhoneNumber String? @db.VarChar(15)
-  RoleId      String
-  Role        Role @relation(fields: [RoleId], references: [Id], onDelete: Restrict)
-  Orders      Order[]
-  Reviews     Review[]
-  CreatedAt   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
-}
-
-model Category {
-  Id            String @id @default(uuid())
-  CategoryName  String @db.VarChar(50)
-  Products      Product[]
-  CreatedAt     DateTime @default(now())
-  UpdatedAt     DateTime @updatedAt
-}
-
-model Product {
-  Id            String @id @default(uuid())
-  ProductName   String @db.VarChar(100)
-  Description   String? @db.Text
-  Price         Decimal
-  Stock         Int @default(0)
-  CategoryId    String
-  Category      Category @relation(fields: [CategoryId], references: [Id], onDelete: Restrict)
-  OrderDetails  OrderDetail[]
-  Reviews       Review[]
-  CreatedAt     DateTime @default(now())
-  UpdatedAt     DateTime @updatedAt
-}
-
-model Order {
-  Id            String @id @default(uuid())
-  UserId        String
-  User          User @relation(fields: [UserId], references: [Id], onDelete: Restrict)
-  OrderDate     DateTime @default(now())
-  TotalAmount   Decimal
-  OrderStatus   OrderStatus
-  OrderDetails  OrderDetail[]
-  CreatedAt     DateTime @default(now())
-  UpdatedAt     DateTime @updatedAt
-}
-
-model OrderDetail {
-  Id          String @id @default(uuid())
-  OrderId     String
-  Order       Order @relation(fields: [OrderId], references: [Id], onDelete: Restrict)
-  ProductId   String
-  Product     Product @relation(fields: [ProductId], references: [Id], onDelete: Restrict)
-  Quantity    Int
-  Price       Decimal
-  CreatedAt   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
-}
-
-model Review {
-  Id          String @id @default(uuid())
-  UserId      String
-  User        User @relation(fields: [UserId], references: [Id], onDelete: Restrict)
-  ProductId   String
-  Product     Product @relation(fields: [ProductId], references: [Id], onDelete: Restrict)
-  Rating      Int
-  Comment     String? @db.Text
-  ReviewDate  DateTime @default(now())
 }
