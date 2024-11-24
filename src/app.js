@@ -7,6 +7,8 @@ const roleRoutes = require('./routes/roleRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const orderDetailRoutes = require('./routes/orderDetailRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 app.use(express.json());
 
@@ -17,5 +19,7 @@ app.use('/roles', roleRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/orderDetails', orderDetailRoutes);
+app.use('/reviews', reviewRoutes);
 
 module.exports = app;
